@@ -1,7 +1,7 @@
 # proxy-relay-control
 
-[![CI](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml)
-[![E2E](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/cropalato/proxy-relay-control/ci.yml?branch=main&label=CI)](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml)
+[![E2E](https://img.shields.io/github/actions/workflow/status/cropalato/proxy-relay-control/e2e.yml?branch=main&label=E2E)](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml)
 [![Docker Hub](https://img.shields.io/docker/v/cropalato/proxy-relay-control?label=docker&sort=semver)](https://hub.docker.com/r/cropalato/proxy-relay-control)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/cropalato/proxy-relay-control/blob/main/LICENSE)
 
