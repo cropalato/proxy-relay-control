@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml)
 [![E2E](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml)
+[![Docker Hub](https://img.shields.io/docker/v/cropalato/proxy-relay-control?label=docker&sort=semver)](https://hub.docker.com/r/cropalato/proxy-relay-control)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 An identity-aware egress relay for multi-tenant Kubernetes clusters that reach the
 internet through a corporate forward proxy.
@@ -105,5 +107,12 @@ A mismatch means something is rewriting the source address — `kube-proxy
 
 ## Status
 
-v1. Identity is pod-IP based; ServiceAccount-token and mTLS/SPIFFE providers fit
-the same interface and are the intended hardening path.
+v0.1.0. Identity is pod-IP based; ServiceAccount-token and mTLS/SPIFFE providers
+fit the same interface and are the intended hardening path.
+
+Images are published to [Docker Hub](https://hub.docker.com/r/cropalato/proxy-relay-control)
+as `cropalato/proxy-relay-control`.
+
+## License
+
+[MIT](LICENSE).

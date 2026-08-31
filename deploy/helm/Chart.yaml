@@ -4,7 +4,16 @@ description: Identity-aware egress relay that authorizes Kubernetes workloads an
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
+home: https://github.com/cropalato/proxy-relay-control
+sources:
+  - https://github.com/cropalato/proxy-relay-control
+maintainers:
+  - name: Ricardo Melo
+    url: https://github.com/cropalato
 keywords:
   - egress
   - proxy
+  - forward-proxy
   - multi-tenancy
+  - network-security
+  - zero-trust
