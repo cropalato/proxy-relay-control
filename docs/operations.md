@@ -12,8 +12,8 @@ The first is worth checking on every cluster before trusting the relay:
 
 ```sh
 kubectl run preflight --rm -it --restart=Never \
-  --image=ghcr.io/cropalato/proxy-relay-control:0.1.0 \
-  --overrides='{"spec":{"containers":[{"name":"preflight","image":"ghcr.io/cropalato/proxy-relay-control:0.1.0","args":["preflight","--url","http://relay.relay-system:9090"],"env":[{"name":"POD_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}]}]}}'
+  --image=cropalato/proxy-relay-control:0.1.0 \
+  --overrides='{"spec":{"containers":[{"name":"preflight","image":"cropalato/proxy-relay-control:0.1.0","args":["preflight","--url","http://relay.relay-system:9090"],"env":[{"name":"POD_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}]}]}}'
 ```
 
 A mismatch means the relay will attribute traffic to a node rather than a

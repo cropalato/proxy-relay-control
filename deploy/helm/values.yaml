@@ -4,7 +4,7 @@
 fullnameOverride: relay
 
 image:
-  repository: ghcr.io/cropalato/proxy-relay-control
+  repository: cropalato/proxy-relay-control
   tag: ""            # defaults to .Chart.AppVersion
   pullPolicy: IfNotPresent
 

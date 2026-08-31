@@ -8,7 +8,7 @@
 set -euo pipefail
 
 CLUSTER="${CLUSTER:-proxy-relay-e2e}"
-IMAGE="${IMAGE:-ghcr.io/cropalato/proxy-relay-control}"
+IMAGE="${IMAGE:-cropalato/proxy-relay-control}"
 TAG="${TAG:-e2e}"
 KEEP="${KEEP:-0}"
 

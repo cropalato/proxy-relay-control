@@ -75,6 +75,10 @@ Initial release.
   ServiceMonitor, and readiness gated on cache sync.
 - Distroless container image running as a non-root user with a read-only root
   filesystem.
+- GitHub Actions running gofmt, `go vet`, the race-enabled test suite, a
+  compile, `helm lint`, shellcheck and a container build on every push and pull
+  request, plus a tag-triggered release that republishes the image to Docker Hub
+  as `cropalato/proxy-relay-control`.
 - End-to-end suite against a kind cluster, covering what unit tests cannot:
   identity through a real Service, RBAC, CA bundle scoping, and per-tenant
   attribution at the corporate proxy.

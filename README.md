@@ -1,5 +1,7 @@
 # proxy-relay-control
 
+[![CI](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml)
+
 An identity-aware egress relay for multi-tenant Kubernetes clusters that reach the
 internet through a corporate forward proxy.
 
@@ -85,7 +87,7 @@ curl https://api.github.com/zen
 Identity rests on the relay seeing the client's real pod IP. Check it:
 
 ```sh
-kubectl run preflight --rm -it --image=ghcr.io/cropalato/proxy-relay-control:0.1.0 \
+kubectl run preflight --rm -it --image=cropalato/proxy-relay-control:0.1.0 \
   --env POD_IP=... -- preflight --url http://relay.relay-system:9090
 ```
 

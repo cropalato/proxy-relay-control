@@ -1,4 +1,4 @@
-IMAGE ?= ghcr.io/cropalato/proxy-relay-control
+IMAGE ?= cropalato/proxy-relay-control
 TAG   ?= dev
 
 .PHONY: build test vet fmt lint image chart e2e clean
