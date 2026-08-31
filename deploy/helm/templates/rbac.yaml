@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "relay.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "relay.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "relay.fullname" . }}
+  labels:
+    {{- include "relay.labels" . | nindent 4 }}
+rules:
+  # Pod and namespace reads are how a client address becomes a workload identity.
+  - apiGroups: [""]
+    resources: [pods, namespaces]
+    verbs: [get, list, watch]
+  - apiGroups: [relay.cropalato.io]
+    resources: [egresspolicies, upstreamproxies]
+    verbs: [get, list, watch]
+  - apiGroups: [relay.cropalato.io]
+    resources: [egresspolicies/status]
+    verbs: [get, update, patch]
+  # The CA bundle is written into every namespace that uses an inspected
+  # destination. Nothing else in the cluster is written.
+  - apiGroups: [""]
+    resources: [configmaps]
+    verbs: [get, list, create, update, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "relay.fullname" . }}
+  labels:
+    {{- include "relay.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "relay.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "relay.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "relay.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "relay.labels" . | nindent 4 }}
+rules:
+  # Secret access is namespaced on purpose: the relay holds other people's proxy
+  # credentials and must not be able to read a tenant's Secrets.
+  - apiGroups: [""]
+    resources: [secrets]
+    verbs: [get, list, watch]
+{{- if .Values.ca.autoInit }}
+  - apiGroups: [""]
+    resources: [secrets]
+    verbs: [create]
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "relay.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "relay.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "relay.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "relay.fullname" . }}
+    namespace: {{ .Release.Namespace }}

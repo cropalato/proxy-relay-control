@@ -1,0 +1,27 @@
+apiVersion: relay.cropalato.io/v1alpha1
+kind: EgressPolicy
+metadata:
+  name: team-a
+spec:
+  selector:
+    namespaceSelector:
+      matchLabels:
+        tenant: team-a
+  upstreamRef:
+    name: corp-team-a
+  destinations:
+    # Host-level grant. Opaque tunnel, works with any client including ones that
+    # pin certificates.
+    - host: "*.github.com"
+      ports: [443]
+
+    # Path-level grant. Requires TLS inspection, so workloads in team-a will
+    # receive the relay CA bundle in their namespace.
+    - host: artifacts.corp.example
+      ports: [443]
+      tlsMode: inspect
+      paths:
+        - path: /repos/team-a
+          methods: [GET, HEAD]
+        - path: /v2/*/blobs/**
+          methods: [GET]

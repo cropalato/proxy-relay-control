@@ -1,0 +1,10 @@
+apiVersion: v2
+name: proxy-relay-control
+description: Identity-aware egress relay that authorizes Kubernetes workloads and forwards their traffic through a corporate proxy under per-tenant credentials.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - egress
+  - proxy
+  - multi-tenancy

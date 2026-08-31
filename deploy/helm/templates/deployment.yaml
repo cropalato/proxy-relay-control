@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "relay.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "relay.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "relay.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "relay.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "relay.fullname" . }}
+      # Established tunnels are drained by the relay itself; this only has to
+      # outlast the configured grace so the pod is not killed mid-drain.
+      terminationGracePeriodSeconds: {{ add 10 (regexFind "[0-9]+" .Values.timeouts.shutdownGrace | int) }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: relay
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - serve
+            - --listen=:{{ .Values.service.port }}
+            - --admin-listen=:{{ .Values.service.adminPort }}
+            - --ca-secret={{ .Values.ca.secretName }}
+            - --ca-configmap={{ .Values.ca.configMapName }}
+            - --handshake-timeout={{ .Values.timeouts.handshake }}
+            - --idle-timeout={{ .Values.timeouts.idle }}
+            - --shutdown-grace={{ .Values.timeouts.shutdownGrace }}
+            - --upstream-timeout={{ .Values.timeouts.upstream }}
+            - --leaf-validity={{ .Values.timeouts.leafValidity }}
+            - --log-level={{ .Values.log.level }}
+            - --log-format={{ .Values.log.format }}
+            {{- if .Values.ca.autoInit }}
+            - --auto-init-ca
+            {{- end }}
+            {{- range .Values.denyCIDRs }}
+            - --deny-cidr={{ . }}
+            {{- end }}
+            {{- if .Values.disableDefaultDenyCIDRs }}
+            - --no-default-deny-cidrs
+            {{- end }}
+            {{- if .Values.originCA.configMapName }}
+            - --origin-ca-file=/etc/origin-ca/{{ .Values.originCA.key }}
+            {{- end }}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - name: proxy
+              containerPort: {{ .Values.service.port }}
+            - name: admin
+              containerPort: {{ .Values.service.adminPort }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: admin
+          readinessProbe:
+            # Readiness waits for the policy caches. Serving before they sync
+            # would deny every request, which reads as an outage rather than a
+            # startup delay.
+            httpGet:
+              path: /readyz
+              port: admin
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.originCA.configMapName }}
+          volumeMounts:
+            - name: origin-ca
+              mountPath: /etc/origin-ca
+              readOnly: true
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+      {{- if .Values.originCA.configMapName }}
+      volumes:
+        - name: origin-ca
+          configMap:
+            name: {{ .Values.originCA.configMapName }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

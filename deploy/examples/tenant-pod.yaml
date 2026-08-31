@@ -1,0 +1,38 @@
+# A tenant workload using an inspected destination: proxy variables plus the
+# relay CA. Tenants whose destinations are all tunnel-mode need only the
+# environment variables.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: builder
+  namespace: team-a
+spec:
+  containers:
+    - name: app
+      image: curlimages/curl:latest
+      command: ["sleep", "infinity"]
+      env:
+        - name: http_proxy
+          value: http://relay.relay-system:3128
+        - name: https_proxy
+          value: http://relay.relay-system:3128
+        - name: HTTP_PROXY
+          value: http://relay.relay-system:3128
+        - name: HTTPS_PROXY
+          value: http://relay.relay-system:3128
+        - name: no_proxy
+          value: .svc,.cluster.local,localhost,127.0.0.1
+        # Go and most OpenSSL-based tools read SSL_CERT_FILE; curl ignores it and
+        # needs CURL_CA_BUNDLE. Set both when the image runs a mix of tools.
+        - name: SSL_CERT_FILE
+          value: /etc/relay-ca/ca.crt
+        - name: CURL_CA_BUNDLE
+          value: /etc/relay-ca/ca.crt
+      volumeMounts:
+        - name: relay-ca
+          mountPath: /etc/relay-ca
+          readOnly: true
+  volumes:
+    - name: relay-ca
+      configMap:
+        name: relay-ca-bundle

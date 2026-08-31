@@ -1,0 +1,125 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: egresspolicies.relay.cropalato.io
+spec:
+  group: relay.cropalato.io
+  scope: Cluster
+  names:
+    kind: EgressPolicy
+    listKind: EgressPolicyList
+    plural: egresspolicies
+    singular: egresspolicy
+    shortNames: [egp]
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      additionalPrinterColumns:
+        - name: Upstream
+          type: string
+          jsonPath: .spec.upstreamRef.name
+        - name: Destinations
+          type: integer
+          jsonPath: .status.destinationCount
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
+      schema:
+        openAPIV3Schema:
+          type: object
+          description: >-
+            EgressPolicy grants a set of workloads access to a set of destinations
+            through a named upstream proxy profile. It is the grant itself, so
+            tenants must not be given write access to this kind.
+          properties:
+            spec:
+              type: object
+              required: [selector, destinations, upstreamRef]
+              properties:
+                selector:
+                  type: object
+                  description: Which workloads this policy applies to.
+                  properties:
+                    namespaceSelector:
+                      type: object
+                      description: >-
+                        Namespaces this policy covers. Omitting it grants nothing;
+                        write an explicit empty selector ({}) to mean every namespace.
+                      x-kubernetes-preserve-unknown-fields: true
+                    podSelector:
+                      type: object
+                      description: Optional further narrowing within selected namespaces.
+                      x-kubernetes-preserve-unknown-fields: true
+                destinations:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [host]
+                    properties:
+                      host:
+                        type: string
+                        description: >-
+                          Hostname, or a glob. "*.example.com" matches exactly one
+                          extra label; "**.example.com" matches any depth.
+                      ports:
+                        type: array
+                        items:
+                          type: integer
+                          format: int32
+                          minimum: 1
+                          maximum: 65535
+                        description: Defaults to 80 and 443 when empty.
+                      tlsMode:
+                        type: string
+                        enum: [tunnel, inspect]
+                        default: tunnel
+                        description: >-
+                          tunnel splices bytes opaquely and can only authorize host
+                          and port. inspect terminates TLS at the relay so path and
+                          method rules apply; workloads must trust the relay CA.
+                      paths:
+                        type: array
+                        description: >-
+                          Allowed request paths. Empty grants the whole host.
+                        items:
+                          type: object
+                          required: [path]
+                          properties:
+                            path:
+                              type: string
+                              description: >-
+                                Segment-aware prefix by default. "*" matches within
+                                one segment, "**" across segments.
+                            exact:
+                              type: boolean
+                              default: false
+                            methods:
+                              type: array
+                              items:
+                                type: string
+                              description: Empty means any method.
+                            allowUpgrade:
+                              type: boolean
+                              default: false
+                              description: >-
+                                Permit protocol upgrades. Off by default because path
+                                rules stop being enforceable once a connection upgrades.
+                    x-kubernetes-validations:
+                      # Path rules on a tunnelled destination would never be
+                      # evaluated. Rejecting them is the difference between a
+                      # policy that looks enforced and one that is.
+                      - rule: "!has(self.paths) || size(self.paths) == 0 || self.tlsMode == 'inspect'"
+                        message: "paths require tlsMode: inspect; a tunnelled destination cannot see request paths"
+                upstreamRef:
+                  type: object
+                  required: [name]
+                  properties:
+                    name:
+                      type: string
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+      subresources:
+        status: {}

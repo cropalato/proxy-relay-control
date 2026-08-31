@@ -1,0 +1,67 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: upstreamproxies.relay.cropalato.io
+spec:
+  group: relay.cropalato.io
+  scope: Cluster
+  names:
+    kind: UpstreamProxy
+    listKind: UpstreamProxyList
+    plural: upstreamproxies
+    singular: upstreamproxy
+    shortNames: [upx]
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      additionalPrinterColumns:
+        - name: URL
+          type: string
+          jsonPath: .spec.url
+        - name: Credentials
+          type: string
+          jsonPath: .spec.credentialsSecretRef.name
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
+      schema:
+        openAPIV3Schema:
+          type: object
+          description: >-
+            UpstreamProxy names a corporate proxy and the credentials the relay
+            presents to it. Several profiles may point at the same proxy with
+            different credentials; that is how per-tenant attribution is produced.
+          properties:
+            spec:
+              type: object
+              required: [url]
+              properties:
+                url:
+                  type: string
+                  pattern: '^https?://'
+                  description: Corporate proxy URL, for example http://corp-proxy.internal:3128
+                credentialsSecretRef:
+                  type: object
+                  required: [name]
+                  description: >-
+                    Secret holding the credentials. It must live in the relay's own
+                    namespace; references elsewhere are refused at read time.
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                    usernameKey:
+                      type: string
+                      default: username
+                    passwordKey:
+                      type: string
+                      default: password
+                noProxy:
+                  type: array
+                  items:
+                    type: string
+                  description: >-
+                    Host globs dialled directly instead of through the corporate
+                    proxy. Suffix form (".corp.example") is accepted.

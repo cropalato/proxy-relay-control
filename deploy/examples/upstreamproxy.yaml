@@ -1,0 +1,21 @@
+apiVersion: relay.cropalato.io/v1alpha1
+kind: UpstreamProxy
+metadata:
+  name: corp-team-a
+spec:
+  url: http://corp-proxy.internal:3128
+  credentialsSecretRef:
+    name: corp-team-a
+    namespace: relay-system
+---
+# A second profile against the same proxy with a different account. This is what
+# makes the corporate proxy's own logs and quotas per-tenant.
+apiVersion: relay.cropalato.io/v1alpha1
+kind: UpstreamProxy
+metadata:
+  name: corp-team-b
+spec:
+  url: http://corp-proxy.internal:3128
+  credentialsSecretRef:
+    name: corp-team-b
+    namespace: relay-system

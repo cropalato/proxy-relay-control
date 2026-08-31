@@ -1,0 +1,81 @@
+# Resource name. The docs and examples all assume the relay is reachable at
+# http://relay.<namespace>:3128, so this is "relay" rather than the chart name.
+# Changing it means changing the http_proxy value handed to tenants.
+fullnameOverride: relay
+
+image:
+  repository: ghcr.io/cropalato/proxy-relay-control
+  tag: ""            # defaults to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  port: 3128
+  adminPort: 9090
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 512Mi
+
+# Addresses the relay refuses as destinations, on top of the built-in private
+# ranges. Set these: the pod and service CIDRs are exactly what a tenant would
+# use an egress proxy to reach back into, and the relay cannot discover them.
+denyCIDRs: []
+# Turn off the built-in private-range denials. Only appropriate when the
+# destinations are themselves on a private range and you have accepted that the
+# relay can then be pointed at internal addresses.
+disableDefaultDenyCIDRs: false
+# - 10.244.0.0/16    # pod CIDR
+# - 10.96.0.0/12     # service CIDR
+
+# Extra trust roots for verifying inspected origins signed by an internal CA.
+# The system roots are kept; this is added to them.
+originCA:
+  # Name of a ConfigMap in the relay's namespace holding the PEM.
+  configMapName: ""
+  key: ca.crt
+
+ca:
+  # Secret holding the relay CA used for tlsMode: inspect.
+  secretName: relay-ca
+  # Generate the CA on first start when the Secret is absent. Leave false and run
+  # "relay init-ca" when the key must come from a secret store instead.
+  autoInit: false
+  # Name of the ConfigMap published into namespaces that use inspected destinations.
+  configMapName: relay-ca-bundle
+
+timeouts:
+  handshake: 30s
+  idle: 5m
+  shutdownGrace: 20s
+  upstream: 10s
+  leafValidity: 24h
+
+log:
+  level: info
+  format: json
+
+# The relay is only meaningful if tenants cannot route around it. This policy
+# restricts who may reach the proxy port; pair it with a cluster-level policy
+# that stops pods reaching the corporate proxy directly.
+networkPolicy:
+  enabled: true
+  # Namespaces allowed to use the relay. Empty means every namespace in the
+  # cluster may connect, and policy alone decides what they reach.
+  allowedNamespaceSelector: {}
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
