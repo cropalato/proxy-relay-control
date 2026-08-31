@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - MIT license.
+- Workflow that keeps the Docker Hub repository description in step with the
+  README, since Docker Hub does not inherit it.
 
 ## [0.1.0] - 2026-08-31
 

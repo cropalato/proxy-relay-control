@@ -1,0 +1,32 @@
+name: Docker Hub description
+
+# Docker Hub does not inherit the GitHub README, so the repository page stays
+# blank unless something pushes it. This keeps the two in step.
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - .github/workflows/dockerhub-description.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Sync README to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update repository description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          # Needs a token with write scope; the read-only token that is enough
+          # for pushing images cannot edit repository metadata.
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: cropalato/proxy-relay-control
+          short-description: "Identity-aware egress relay for multi-tenant Kubernetes clusters behind a corporate proxy"
+          readme-filepath: ./README.md
