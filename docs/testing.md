@@ -35,6 +35,19 @@ creates a cluster, and stands up a stand-in corporate proxy
 (`hack/testproxy.py`) plus an nginx origin with a certificate from a throwaway
 CA. `KEEP=1` leaves the cluster running for inspection.
 
+### In CI
+
+The suite runs on every push and pull request via the `E2E` workflow. No
+external or publicly reachable cluster is involved: kind builds the cluster out
+of containers on the GitHub runner's own Docker daemon, and the runner is
+discarded afterwards. The runner image already provides docker, kubectl, helm
+and openssl, so the workflow only installs kind.
+
+The workflow keeps the cluster alive on failure and dumps pods, relay logs,
+corporate proxy logs, policy objects and events. The relay explains every
+denial in its audit log, which is the quickest way to tell a real regression
+from a broken fixture when you cannot reach the cluster yourself.
+
 It asserts what only a real cluster can show:
 
 | Assertion | What it proves |

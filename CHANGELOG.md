@@ -81,7 +81,9 @@ Initial release.
   as `cropalato/proxy-relay-control`.
 - End-to-end suite against a kind cluster, covering what unit tests cannot:
   identity through a real Service, RBAC, CA bundle scoping, and per-tenant
-  attribution at the corporate proxy.
+  attribution at the corporate proxy. It also runs in CI, where kind builds the
+  cluster on the runner itself, and dumps relay logs and cluster state on
+  failure.
 
 ### Known limitations
 

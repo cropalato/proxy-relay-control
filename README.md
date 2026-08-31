@@ -1,6 +1,7 @@
 # proxy-relay-control
 
 [![CI](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml)
+[![E2E](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml)
 
 An identity-aware egress relay for multi-tenant Kubernetes clusters that reach the
 internet through a corporate forward proxy.
