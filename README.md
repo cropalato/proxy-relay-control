@@ -3,7 +3,7 @@
 [![CI](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/ci.yml)
 [![E2E](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml/badge.svg)](https://github.com/cropalato/proxy-relay-control/actions/workflows/e2e.yml)
 [![Docker Hub](https://img.shields.io/docker/v/cropalato/proxy-relay-control?label=docker&sort=semver)](https://hub.docker.com/r/cropalato/proxy-relay-control)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/cropalato/proxy-relay-control/blob/main/LICENSE)
 
 An identity-aware egress relay for multi-tenant Kubernetes clusters that reach the
 internet through a corporate forward proxy.
@@ -115,4 +115,4 @@ as `cropalato/proxy-relay-control`.
 
 ## License
 
-[MIT](LICENSE).
+[MIT](https://github.com/cropalato/proxy-relay-control/blob/main/LICENSE).
