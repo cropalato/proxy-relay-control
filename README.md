@@ -96,14 +96,14 @@ kubectl run preflight --rm -it --image=cropalato/proxy-relay-control:0.1.0 \
 
 A mismatch means something is rewriting the source address — `kube-proxy
 --masquerade-all`, a CNI masquerade rule, or a `hostNetwork` client. See
-[docs/operations.md](docs/operations.md).
+[docs/operations.md](https://github.com/cropalato/proxy-relay-control/blob/main/docs/operations.md).
 
 ## Documentation
 
-- [docs/policy.md](docs/policy.md) — writing `EgressPolicy` and `UpstreamProxy`
-- [docs/onboarding.md](docs/onboarding.md) — what a tenant has to do
-- [docs/operations.md](docs/operations.md) — CA rotation, preflight, troubleshooting
-- [docs/testing.md](docs/testing.md) — the end-to-end suite
+- [docs/policy.md](https://github.com/cropalato/proxy-relay-control/blob/main/docs/policy.md) — writing `EgressPolicy` and `UpstreamProxy`
+- [docs/onboarding.md](https://github.com/cropalato/proxy-relay-control/blob/main/docs/onboarding.md) — what a tenant has to do
+- [docs/operations.md](https://github.com/cropalato/proxy-relay-control/blob/main/docs/operations.md) — CA rotation, preflight, troubleshooting
+- [docs/testing.md](https://github.com/cropalato/proxy-relay-control/blob/main/docs/testing.md) — the end-to-end suite
 
 ## Status
 
